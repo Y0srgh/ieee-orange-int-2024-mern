@@ -194,7 +194,7 @@ export const authEmployee = async (req, res) => {
 
 export const refresh = (req, res) => {
   //const cookies = req.cookies;
-  console.log("log mel refresh el headers", req.headers.jwt);
+  console.log("log mel refresh el headers", req.headers);
   //console.log("Cookies:", cookies);
   if (!req.headers?.jwt) return res.status(401).json({ message: 'Unauthorized 1' });
   const refreshToken = req.headers.jwt
