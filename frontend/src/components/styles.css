@@ -1,0 +1,126 @@
+.adding-employee-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-top: 150px;
+}
+.section-heading {
+    padding: 20px;
+    padding-bottom: 0;
+  font-size: 18pt;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+label,
+input {
+  display: block;
+}
+label {
+  color: var(--secondary-color);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12pt;
+}
+input {
+  font-size: 16pt;
+  margin-bottom: 15px;
+  padding: 10px;
+  width: 400px;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: solid 0.3px;
+}
+
+form button,
+.delete-form button{
+  cursor: pointer;
+}
+
+form button:hover,
+.delete-form button:hover {
+  background-color: #8f8ee2;
+  border-color: #8f8ee2;
+}
+
+button[type="submit"]:disabled {
+  background-color: var(--secondary-color);
+  cursor: not-allowed;
+}
+
+.delete-form button {
+    margin-left: 40%;
+}
+
+.results {
+  display: grid;
+  column-gap: 14px;
+  row-gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 400px));
+  margin-top: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
+  justify-content: space-around;
+}
+
+.listing {
+  background: var(--accent-color);
+  border-radius: 30px;
+  padding-bottom: 30px;
+}
+
+.listing-heading {
+  color: var(--primary-color);
+  padding: 10px 20px 0 20px;
+}
+
+.header-container a,
+.listing a {
+  padding-left: 20px;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+.header-container a,
+.listing a::after {
+  content: "\203A";
+  margin-left: 5px;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+.header-container a{
+    margin-right: 20px;
+}
+
+
+.taking-action {
+    margin-top: 15px;
+}
+.taking-action .supprimer{
+    color: rgb(222, 25, 110);
+    margin-top: 15px;
+}
+.taking-action {
+    margin-top: 15px;
+}
+
+@media (min-width: 500px) and (max-width: 768px) {
+    .results {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    input[type="text"] {
+        width: 70%;
+    }   
+  }
+  
+  @media (max-width: 499px) {
+    .results {
+        grid-template-columns: 1fr;
+    }    
+  }

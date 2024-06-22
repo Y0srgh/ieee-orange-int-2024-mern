@@ -6,6 +6,7 @@ import { Employee } from "../models/employeeModel.js";
 export const addEmployee = async (req, res) => {
   try {
     const { nom, email, password } = req.body;
+    console.log(req.body);
     if (!nom || !email || !password) {
       return res
         .status(400)
