@@ -2,6 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { Employee } from "../models/employeeModel.js";
+import jwt from "jsonwebtoken";
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
 
 export const addEmployee = async (req, res) => {
   try {
@@ -140,3 +144,88 @@ export const deleteEmployee = async (req, res) => {
     });
   }
 };
+
+export const authEmployee = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Veuillez fournir tous les champs" })
+    }
+
+    const employee = await Employee.findOne({ email }).select('+password');
+    if (!employee) {
+      return res.status(401).send({ message: "Invald Email " });
+    }
+
+    const validPassword = await bcrypt.compare(password, employee.password);
+    if (!validPassword) {
+      return res.status(401).send({ message: "Invald Password" });
+    }
+
+    const accessToken = jwt.sign(
+      {
+        "UserInfo": {
+          "id": employee._id,
+          "email": employee.email,
+          "nom": employee.nom,
+        }
+      },
+      ACCESS_TOKEN_SECRET,
+      { expiresIn: '10m' }
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        "id": employee._id,
+        "email": employee.email
+      },
+      REFRESH_TOKEN_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.status(200).json({ accessToken, refreshToken })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+
+export const refresh = (req, res) => {
+  //const cookies = req.cookies;
+  console.log("log mel refresh el headers", req.headers.jwt);
+  //console.log("Cookies:", cookies);
+  if (!req.headers?.jwt) return res.status(401).json({ message: 'Unauthorized 1' });
+  const refreshToken = req.headers.jwt
+
+  try {
+    const decodedToken = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+
+    console.log("-----------",decodedToken);
+  
+  jwt.verify(
+    refreshToken,
+    REFRESH_TOKEN_SECRET,
+    asyncHandler(async (err, decoded) => {
+      if (err) return res.status(403).json({ message: 'Foridden' })
+      const foundUser = await Employee.findOne({ email: decoded.email })
+      if (!foundUser) return res.status(401).json({ message: 'Unauthorized 2' })
+      const accessToken = jwt.sign({
+        "UserInfo": {
+          "id": foundUser._id,
+          "email": foundUser.email,
+          "nom": foundUser.nom
+        }
+      },
+        ACCESS_TOKEN_SECRET,
+        { expiresIn: '10m' }
+      );
+      console.log("access token mel back",accessToken);
+      return res.status(201).json({ accessToken });
+    }))
+  } catch (error) {
+    console.log("lerreur menna");
+    return res.status(403).json({ message: 'Unauthorized 3',refreshToken:'',accessToken:'' });
+  }
+}
